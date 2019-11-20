@@ -2,11 +2,11 @@ package com.codeoftheweb.Salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Entity
 public class GamePlayer {
@@ -16,7 +16,45 @@ public class GamePlayer {
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
 
-    private Date crationDate;
+    ///////////////////////////////////////////////
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "player_id")
+    private Player player;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+    private Date joinDate;
+
+
+    //CONSTRUCTORES
+    public GamePlayer() {
+    }
+
+    public GamePlayer(Date joinDate) {
+        this.joinDate = new Date();
+    }
+
+    public GamePlayer(Game game, Player player) {
+        this.game = game;
+        this.player = player;
+        this.joinDate = new Date();
+    }
+
+    //METODOS
+
+    public Map<String, Object> makeGamePlayerDTO() {
+
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", id);
+        dto.put("player", player.makePlayerDTO());
+
+        return dto;
+    }
+
+    //SETTER y GETTER
 
     public long getId() {
         return id;
@@ -26,14 +64,38 @@ public class GamePlayer {
         this.id = id;
     }
 
-    public Date getCrationDate() {
-        return crationDate;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setCrationDate(Date crationDate) {
-        this.crationDate = crationDate;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public Date getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(Date joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    public static void add(GamePlayer gamePlayer) {
+    }
+
+
 }
+
+
+
 
 
 

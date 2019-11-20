@@ -1,11 +1,9 @@
 package com.codeoftheweb.Salvo.models;
 
-import jdk.jfr.Enabled;
-import org.hibernate.annotations.GenericGenerator;
 
+import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Player {
@@ -15,16 +13,31 @@ public class Player {
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
 
-    @OneToMany(mappedBy="player", fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
     Set<GamePlayer> gamePlayers = new HashSet<>();
 
     private String userName;
 
-    public Player() {}
+  //constructores
+
+    public Player() {
+    }
 
     public Player(String userName) {
-        this.userName= userName;
+        this.userName = userName;
     }
+
+    //metodos
+
+    public Map<String, Object> makePlayerDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", id);
+        dto.put("email", userName);
+
+        return dto;
+    }
+
+    //setter y getter
 
     public String getUserName() {
         return userName;
@@ -39,7 +52,7 @@ public class Player {
     }
 
     public void setId(long id) {
-        this.id=id;
+        this.id = id;
     }
 
     public Set<GamePlayer> getGamePlayers() {
@@ -49,6 +62,5 @@ public class Player {
     public void setGamePlayers(Set<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;
     }
-
 
 }

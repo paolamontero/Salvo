@@ -2,11 +2,9 @@ package com.codeoftheweb.Salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Date;
+import javax.persistence.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Game {
@@ -17,6 +15,40 @@ public class Game {
     private long id;
 
     private Date creationDate;
+
+    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
+    private Set<GamePlayer> gamePlayers;
+
+    //CONSTRUCTORES
+
+    public Game() {
+        this.creationDate = new Date();
+    }
+
+    //metodos
+
+    public void addGamePlayer(GamePlayer gamePlayer) {
+        gamePlayer.setGame(this);
+        GamePlayer.add(gamePlayer);
+    }
+
+
+    public Map<String, Object> makeGameDTO() {
+
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", id);
+        dto.put("created", creationDate);
+        dto.put("gamePlayers", gamePlayers
+                .stream()
+                .map(unGamePlayer -> unGamePlayer.makeGamePlayerDTO())
+                .collect(Collectors.toList())
+                );
+
+        return dto;
+    }
+
+    //SETTERS AND GETTERS
+
 
     public long getId() {
         return id;
@@ -33,6 +65,16 @@ public class Game {
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
+
+    public Set<GamePlayer> getGamePlayers() {
+        return gamePlayers;
+    }
+
+    public void setGamePlayers(Set<GamePlayer> gamePlayers) {
+        this.gamePlayers = gamePlayers;
+    }
+
+
 }
 
 
