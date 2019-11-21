@@ -3,10 +3,7 @@ package com.codeoftheweb.Salvo.models;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 public class GamePlayer {
@@ -28,6 +25,8 @@ public class GamePlayer {
 
     private Date joinDate;
 
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
+    private Set<Ship> ships; // = new HashSet<>();
 
     //CONSTRUCTORES
     public GamePlayer() {
@@ -91,7 +90,16 @@ public class GamePlayer {
     public static void add(GamePlayer gamePlayer) {
     }
 
+    public void addShip(Ship carrier) {
+    }
 
+    public Set<Ship> getShips() {
+        return ships;
+    }
+
+    public void setShips(Set<Ship> ships) {
+        this.ships = ships;
+    }
 }
 
 

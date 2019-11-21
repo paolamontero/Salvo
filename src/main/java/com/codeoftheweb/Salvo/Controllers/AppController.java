@@ -3,8 +3,10 @@ package com.codeoftheweb.Salvo.Controllers;
 import com.codeoftheweb.Salvo.Repository.GamePlayerRepository;
 import com.codeoftheweb.Salvo.Repository.GameRepository;
 import com.codeoftheweb.Salvo.Repository.PlayerRepository;
-
+import com.codeoftheweb.Salvo.models.Game;
+import com.codeoftheweb.Salvo.models.GamePlayer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
@@ -23,6 +25,8 @@ public class AppController {
     @Autowired
     GamePlayerRepository gamePlayerRepository;
 
+//    @Autowired
+//    ShipRepository shipRepository;
 
     @RequestMapping("/games")
     public List<Object> getGamesAll() {
@@ -34,7 +38,7 @@ public class AppController {
                 ;
     }
 
-    @RequestMapping("/players")
+    @RequestMapping("/player")
     public List<Object> getPlayersAll() {
 
         return  playerRepository.findAll()
@@ -43,7 +47,22 @@ public class AppController {
                 .collect(Collectors.toList());
     }
 
+    @RequestMapping ("/game_view/{nn}")
+    public Map<String, Object> getGameViewAll(@PathVariable long nn){
 
+        GamePlayer gamePlayer = gamePlayerRepository.findById(nn).get();
+        Game game = gamePlayer.getGame();
+
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", game.getId());
+        dto.put("created", game.getCreationDate());
+        dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
+                .stream()
+                .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO())
+                .collect(Collectors.toList()));
+
+        return  dto;
+    }
 
     //SETTERS AND GETTERS
 

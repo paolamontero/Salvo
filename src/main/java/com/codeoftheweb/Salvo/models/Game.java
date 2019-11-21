@@ -43,7 +43,6 @@ public class Game {
                 .map(unGamePlayer -> unGamePlayer.makeGamePlayerDTO())
                 .collect(Collectors.toList())
                 );
-
         return dto;
     }
 
