@@ -8,7 +8,7 @@ import com.codeoftheweb.Salvo.models.Game;
 import com.codeoftheweb.Salvo.models.GamePlayer;
 import com.codeoftheweb.Salvo.models.Player;
 import com.codeoftheweb.Salvo.models.Ship;
-import org.springframework.beans.factory.annotaion.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
