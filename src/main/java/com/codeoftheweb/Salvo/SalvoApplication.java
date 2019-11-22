@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @SpringBootApplication
-public class SalvoApplication<Fecha> {
+public class SalvoApplication{
 
 	public static void main(String[] args) {
 		SpringApplication.run(SalvoApplication.class, args);
@@ -50,8 +50,7 @@ public class SalvoApplication<Fecha> {
             gamePlayerRepository.save(gamePlayer2);
 
             Ship ship = new Ship("Carrier");
-            Ship ship2 = new Ship("Carrier");
-            shipRepository.save(ship);
+//            Ship ship2 = new Ship("Carrier");
 
             gamePlayer1.addShip(ship);
 
@@ -62,6 +61,7 @@ public class SalvoApplication<Fecha> {
             ship.setShipLocation(shipLocations);
             shipRepository.save(ship);
 
+            //shipRepository.save(ship);
 		};
     }
 //

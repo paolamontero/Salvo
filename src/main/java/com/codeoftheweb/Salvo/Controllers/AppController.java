@@ -64,23 +64,26 @@ public class AppController {
         return  dto;
     }
 
+
+
+    //ESTPS GETTER Y SETTER NO SON NECESARIOS PORQUE: no es nececario porque nadie lo instancia. ESTA MAL!
     //SETTERS AND GETTERS
-
-    public GameRepository getGameRepository() {
-        return gameRepository;
-    }
-
-    public void setGameRepository(GameRepository gameRepository) {
-        this.gameRepository = gameRepository;
-    }
-
-    public PlayerRepository getPlayerRepository() {
-        return playerRepository;
-    }
-
-    public void setPlayerRepository(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
-    }
+//
+//    public GameRepository getGameRepository() {
+//        return gameRepository;
+//    }
+//
+//    public void setGameRepository(GameRepository gameRepository) {
+//        this.gameRepository = gameRepository;
+//    }
+//
+//    public PlayerRepository getPlayerRepository() {
+//        return playerRepository;
+//    }
+//
+//    public void setPlayerRepository(PlayerRepository playerRepository) {
+//        this.playerRepository = playerRepository;
+//    }
 }
 
 

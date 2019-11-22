@@ -17,7 +17,7 @@ public class Game {
     private Date creationDate;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
-    private Set<GamePlayer> gamePlayers;
+     Set<GamePlayer> gamePlayers;
 
     //CONSTRUCTORES
 
@@ -28,8 +28,8 @@ public class Game {
     //metodos
 
     public void addGamePlayer(GamePlayer gamePlayer) {
-        gamePlayer.setGame(this);
-        GamePlayer.add(gamePlayer);
+//        gamePlayer.setGame(this);
+        this.gamePlayers.add(gamePlayer);
     }
 
 

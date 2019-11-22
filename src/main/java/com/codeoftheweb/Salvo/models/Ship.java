@@ -43,8 +43,6 @@ public class Ship {
         return shipLocations;
     }
 
-
-
     public String getShipType() {
         return shipType;
     }

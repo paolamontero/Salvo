@@ -1,7 +1,6 @@
 package com.codeoftheweb.Salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.*;
 
@@ -53,6 +52,13 @@ public class GamePlayer {
         return dto;
     }
 
+    public void addShip(Ship carrier) {
+        this.ships.add(carrier);
+    }
+//
+//    public static void add(GamePlayer gamePlayer) {
+//    }
+
     //SETTER y GETTER
 
     public long getId() {
@@ -86,13 +92,7 @@ public class GamePlayer {
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
     }
-
-    public static void add(GamePlayer gamePlayer) {
-    }
-
-    public void addShip(Ship carrier) {
-    }
-
+    
     public Set<Ship> getShips() {
         return ships;
     }
