@@ -3,6 +3,7 @@ package com.codeoftheweb.Salvo.Controllers;
 import com.codeoftheweb.Salvo.Repository.GamePlayerRepository;
 import com.codeoftheweb.Salvo.Repository.GameRepository;
 import com.codeoftheweb.Salvo.Repository.PlayerRepository;
+import com.codeoftheweb.Salvo.Repository.ShipRepository;
 import com.codeoftheweb.Salvo.models.Game;
 import com.codeoftheweb.Salvo.models.GamePlayer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,8 @@ public class AppController {
     @Autowired
     GamePlayerRepository gamePlayerRepository;
 
-//    @Autowired
-//    ShipRepository shipRepository;
+     @Autowired
+     ShipRepository shipRepository;
 
     @RequestMapping("/games")
     public List<Object> getGamesAll() {
@@ -61,6 +62,16 @@ public class AppController {
                 .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO())
                 .collect(Collectors.toList()));
 
+        dto.put("ships", gamePlayer.getShips()
+                .stream()
+                .map(ship -> ship.makeShipDTO())
+                .collect(Collectors.toList()));
+        dto.put("salvos", gamePlayer.getGame().getGamePlayers()
+                .stream()
+                .flatMap(_gamePlayer -> _gamePlayer.getSalvos()
+                        .stream())
+                .map(salvo -> salvo.makeSalvoDto())
+                .collect(Collectors.toList()));
         return  dto;
     }
 

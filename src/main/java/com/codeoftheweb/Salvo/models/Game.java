@@ -1,7 +1,6 @@
 package com.codeoftheweb.Salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,7 +71,6 @@ public class Game {
     public void setGamePlayers(Set<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;
     }
-
 
 }
 

@@ -1,7 +1,9 @@
 package com.codeoftheweb.Salvo.models;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
@@ -44,7 +46,6 @@ public class Ship {
     }
 
 
-
     public String getShipType() {
         return shipType;
     }
@@ -63,5 +64,16 @@ public class Ship {
 
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
+    }
+
+    ////////
+
+    public Map<String, Object> makeShipDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+
+        dto.put("type", this.getShipType());
+        dto.put("locations", this.getShipLocations());
+
+        return dto;
     }
 }

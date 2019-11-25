@@ -13,8 +13,6 @@ public class GamePlayer {
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
 
-    ///////////////////////////////////////////////
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "player_id")
     private Player player;
@@ -23,12 +21,16 @@ public class GamePlayer {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    private Date joinDate;
-
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
     private Set<Ship> ships; // = new HashSet<>();
 
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
+    private Set<Salvo> salvos = new HashSet<>();
+
+    private Date joinDate;
+
     //CONSTRUCTORES
+
     public GamePlayer() {
     }
 
@@ -42,7 +44,7 @@ public class GamePlayer {
         this.joinDate = new Date();
     }
 
-    //METODOS
+    //M
 
     public Map<String, Object> makeGamePlayerDTO() {
 
@@ -100,6 +102,16 @@ public class GamePlayer {
     public void setShips(Set<Ship> ships) {
         this.ships = ships;
     }
+
+
+    public Set<Salvo> getSalvos() {
+        return salvos;
+    }
+
+    public void setSalvos(Set<Salvo> salvos) {
+        this.salvos = salvos;
+    }
+
 }
 
 
