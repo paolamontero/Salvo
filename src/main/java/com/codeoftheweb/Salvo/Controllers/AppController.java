@@ -75,23 +75,33 @@ public class AppController {
         return  dto;
     }
 
-    //SETTERS AND GETTERS
+    @RequestMapping("leaderBoard")
+    public List<Object> getAllScores() {
+        List<Object> allPlayers = playerRepository.findAll()
+                .stream()
+                .map(player -> player.makeCalculoPointsDTO())
+                .collect(Collectors.toList());
 
-    public GameRepository getGameRepository() {
-        return gameRepository;
+        return allPlayers;
     }
 
-    public void setGameRepository(GameRepository gameRepository) {
-        this.gameRepository = gameRepository;
-    }
-
-    public PlayerRepository getPlayerRepository() {
-        return playerRepository;
-    }
-
-    public void setPlayerRepository(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
-    }
+//    //SETTERS AND GETTERS--------> no son necesarios en la app controller.
+//
+//    public GameRepository getGameRepository() {
+//        return gameRepository;
+//    }
+//
+//    public void setGameRepository(GameRepository gameRepository) {
+//        this.gameRepository = gameRepository;
+//    }
+//
+//    public PlayerRepository getPlayerRepository() {
+//        return playerRepository;
+//    }
+//
+//    public void setPlayerRepository(PlayerRepository playerRepository) {
+//        this.playerRepository = playerRepository;
+//    }
 }
 
 

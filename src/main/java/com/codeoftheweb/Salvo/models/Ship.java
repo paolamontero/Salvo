@@ -1,9 +1,7 @@
 package com.codeoftheweb.Salvo.models;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
@@ -22,14 +20,22 @@ public class Ship {
 
     private String shipType;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="gamePlayer_id")
     private GamePlayer gamePlayer;
 
     public Ship(){}
 
-    public Ship(String shipType) {this.shipType = shipType;}
+ // NOTAS SOBRE CONSTRUCTORES.
+    /*Estos son consructores sobrecargados: porque aceptan diferentes parametro en su definicion.
+    los parametros son shipType (tipo string, gameplayer que es de tipo Gameplayer, y shiplocation que es una lista de strings)
+    estos parametrso son asignados a los atributos correspondientes de la clase*/
+
+    public Ship(String shipType,GamePlayer gamePlayer, List<String> shipLocations) {
+        this.shipType = shipType;
+        this.gamePlayer = gamePlayer;
+        this.shipLocations = shipLocations;
+    }
 
 //SETTER AND GETTER
 
@@ -44,7 +50,6 @@ public class Ship {
     public List<String> getShipLocations() {
         return shipLocations;
     }
-
 
     public String getShipType() {
         return shipType;
@@ -76,4 +81,5 @@ public class Ship {
 
         return dto;
     }
+
 }

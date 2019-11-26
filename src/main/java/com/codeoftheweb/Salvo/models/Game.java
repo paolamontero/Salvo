@@ -18,31 +18,12 @@ public class Game {
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
     private Set<GamePlayer> gamePlayers;
 
-    //CONSTRUCTORES
+    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
+    private Set<Score> scores;
 
+    //
     public Game() {
         this.creationDate = new Date();
-    }
-
-    //metodos
-
-    public void addGamePlayer(GamePlayer gamePlayer) {
-        gamePlayer.setGame(this);
-        GamePlayer.add(gamePlayer);
-    }
-
-
-    public Map<String, Object> makeGameDTO() {
-
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", id);
-        dto.put("created", creationDate);
-        dto.put("gamePlayers", gamePlayers
-                .stream()
-                .map(unGamePlayer -> unGamePlayer.makeGamePlayerDTO())
-                .collect(Collectors.toList())
-                );
-        return dto;
     }
 
     //SETTERS AND GETTERS
@@ -72,7 +53,46 @@ public class Game {
         this.gamePlayers = gamePlayers;
     }
 
+    public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
+    }
+
+    /////////////////////////////////////
+
+    public void addGamePlayer(GamePlayer gamePlayer) {
+        gamePlayer.setGame(this);
+        addGamePlayer(gamePlayer);
+    }
+
+
+    public Map<String, Object> makeGameDTO() {
+
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", id);
+        dto.put("created", creationDate);
+
+        dto.put("gamePlayers", this.getGamePlayers()
+                .stream()
+                .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
+                .collect(Collectors.toList()));
+
+        dto.put("scores", this.getScores()
+                .stream()
+                .map(score -> score.makeScoreDTO())
+                .collect(Collectors.toList()));
+        return dto;
+    }
+
+    public List<Map<String, Object>> getAllSalvosFromGamePlayers(){
+        return gamePlayers.
+                stream()
+                .flatMap(gamePlayer -> gamePlayer.getSalvos().stream())
+                .map(salvo -> salvo.makeSalvoDto())
+                .collect(Collectors.toList());
+    }
+
 }
-
-
-

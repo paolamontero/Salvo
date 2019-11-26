@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class GamePlayer {
@@ -29,8 +30,6 @@ public class GamePlayer {
 
     private Date joinDate;
 
-    //CONSTRUCTORES
-
     public GamePlayer() {
     }
 
@@ -44,15 +43,9 @@ public class GamePlayer {
         this.joinDate = new Date();
     }
 
-    //M
-
-    public Map<String, Object> makeGamePlayerDTO() {
-
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", id);
-        dto.put("player", player.makePlayerDTO());
-
-        return dto;
+    public Score getScore (){
+        Score score = this.player.getScore(this.game.getId());
+        return score;
     }
 
     //SETTER y GETTER
@@ -89,11 +82,8 @@ public class GamePlayer {
         this.joinDate = joinDate;
     }
 
-    public static void add(GamePlayer gamePlayer) {
-    }
-
-    public void addShip(Ship carrier) {
-    }
+ //AQUI HABIA UN PUBLIC STATIC VOID PERO MATI ME DIJO QUE LO QUITARA, SI ESTOY EN GAMEPLAYER COMO ME VOY A ENVIAR OtRO GAMEPLAYER.
+    //lo ideal (que es como lo tengo) seria agregarlo pero en el constructor de shp.
 
     public Set<Ship> getShips() {
         return ships;
@@ -103,7 +93,6 @@ public class GamePlayer {
         this.ships = ships;
     }
 
-
     public Set<Salvo> getSalvos() {
         return salvos;
     }
@@ -112,8 +101,38 @@ public class GamePlayer {
         this.salvos = salvos;
     }
 
-}
+    ///////////////////
 
+    public Map<String, Object> makeGamePlayerDTO() {
+
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", id);
+        dto.put("player", player.makePlayerDTO());
+
+        return dto;
+    }
+
+    public List<Map<String, Object>> getAllShips(){
+        return this.getShips()
+                .stream()
+                .map(ship -> ship.makeShipDTO())
+                .collect(Collectors.toList());
+    }
+
+    public List<Map<String,Object>> getAllSalvos() {
+        return this.getGame().getGamePlayers()
+                .stream()
+                .flatMap(_gamePlayer -> _gamePlayer.getSalvos()
+                        .stream())
+                .map(salvo -> salvo.makeSalvoDto())
+                .collect(Collectors.toList());
+    }
+
+//    public void addShip(Ship ship1) {
+//        ships.add(ship1); //no podia poner addShip porque estaba llamando al metdo una y otra vez y se hacia bcle infinito. llamo a la funcion de la lista.
+//    }
+
+}
 
 
 

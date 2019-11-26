@@ -2,10 +2,7 @@ package com.codeoftheweb.Salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 public class Salvo {
@@ -23,26 +20,15 @@ public class Salvo {
     @JoinColumn(name = "gamePlayerId")
     private GamePlayer gamePlayer;
 
-      private int turn;
+    private int turn;
 
-    public Salvo () {
+    public Salvo() {
     }
 
-
-    public Salvo(GamePlayer gamePlayer,int turn,List salvoLocations) {
+    public Salvo(GamePlayer gamePlayer, int turn, List salvoLocations) {
         this.setGamePlayer(gamePlayer);
         this.setTurn(turn);
         this.salvoLocations(salvoLocations);
-    }
-
-    public Map<String, Object> makeSalvoDto() {
-        Map<String, Object> dto = new LinkedHashMap<>();
-
-        dto.put("turn", this.getTurn());
-        dto.put("salvoLocations", this.getSalvoLocation());
-        dto.put("player", this.getGamePlayer().getPlayer().getId());
-
-        return dto;
     }
 
     //Setter and Getter
@@ -82,8 +68,22 @@ public class Salvo {
     private void salvoLocations(List<String> salvoLocations) {
         this.salvoLocations = salvoLocations;
     }
-}
 
+    public List<String> getSalvoLocations() {
+        return salvoLocations;
+    }
+//////////////////////////////////////////////
+
+    public Map<String, Object> makeSalvoDto() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+
+        dto.put("turn", this.getTurn());
+        dto.put("salvoLocations", this.getSalvoLocation());
+        dto.put("player", this.getGamePlayer().getPlayer().getId());
+
+        return dto;
+    }
+}
 
 
 

@@ -1,9 +1,12 @@
 package com.codeoftheweb.Salvo.models;
 
 
+import com.jayway.jsonpath.Filter;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.*;
+
+import static com.jayway.jsonpath.Filter.filter;
 
 @Entity
 public class Player {
@@ -16,25 +19,15 @@ public class Player {
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
     Set<GamePlayer> gamePlayers = new HashSet<>();
 
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+    private Set<Score> scores;
+
     private String userName;
 
-  //constructores
-
-    public Player() {
-    }
+    public Player() {}
 
     public Player(String userName) {
         this.userName = userName;
-    }
-
-    //metodos
-
-    public Map<String, Object> makePlayerDTO() {
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", id);
-        dto.put("email", userName);
-
-        return dto;
     }
 
     //setter y getter
@@ -63,4 +56,48 @@ public class Player {
         this.gamePlayers = gamePlayers;
     }
 
+    public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
+    }
+
+    //////////////
+
+    public Map<String, Object> makePlayerDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", id);
+        dto.put("email", userName);
+
+        return dto;
+    }
+
+    public Score getScore (long gameId){
+        Score score = scores.stream()
+            .filter(score1 -> score1.getGame().getId()== gameId)
+            .findFirst()
+            .orElse(null);
+        return score;
+    }
+
+    public Map<String, Object> makeCalculoPointsDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+
+        double wins, losses, ties, totalScore;
+        wins = scores.stream().filter(points -> points.getScore() == 1.0).count();
+        losses = scores.stream().filter(points -> points.getScore() == 0).count();
+        ties = scores.stream().filter(points -> points.getScore() == 0.5).count();
+        totalScore = (wins * 1) + (losses *0) + (ties * 0.5);
+
+        dto.put("player", this.getUserName());
+        dto.put("totalScore", totalScore);
+        dto.put("wins", wins);
+        dto.put("losses", losses);
+        dto.put("ties", ties);
+
+        return dto;
+
+    }
 }
