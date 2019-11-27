@@ -1,12 +1,9 @@
 package com.codeoftheweb.Salvo.models;
 
-
-import com.jayway.jsonpath.Filter;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.*;
 
-import static com.jayway.jsonpath.Filter.filter;
 
 @Entity
 public class Player {
@@ -23,10 +20,12 @@ public class Player {
     private Set<Score> scores;
 
     private String userName;
+    private String password;
 
     public Player() {}
 
-    public Player(String userName) {
+    public Player(String userName, String password) {
+        this.password = password;
         this.userName = userName;
     }
 
@@ -62,6 +61,14 @@ public class Player {
 
     public void setScores(Set<Score> scores) {
         this.scores = scores;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     //////////////
