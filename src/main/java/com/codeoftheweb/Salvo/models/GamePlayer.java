@@ -128,10 +128,16 @@ public class GamePlayer {
                 .collect(Collectors.toList());
     }
 
+    public GamePlayer getOpponent(){
+        return this.getGame().getGamePlayers().stream()
+                .filter(gamePlayers -> gamePlayers.getId() != this.getId())
+                .findFirst().orElse(new GamePlayer());
+
 //    public void addShip(Ship ship1) {
 //        ships.add(ship1); //no podia poner addShip porque estaba llamando al metdo una y otra vez y se hacia bcle infinito. llamo a la funcion de la lista.
 //    }
 
+}
 }
 
 
