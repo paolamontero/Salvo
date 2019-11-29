@@ -25,7 +25,14 @@ public class Game {
     public Game() {
         this.creationDate = new Date();
     }
+    public Game(Game game) { // podria hacer una copia de otro  game (nunca pasar new Game por parametros) by Mati.e
+        this.setScores(game.getScores());
+        this.creationDate = new Date();
+    }
 
+    public Game(Date asdfdafds) {
+        this.creationDate = asdfdafds;
+    }
     //SETTERS AND GETTERS
 
 

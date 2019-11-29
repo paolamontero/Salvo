@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -63,20 +64,14 @@ public class AppController {
         }
     }
 
-
-//    @RequestMapping("players")
-//    public List<Players> getAll(Authentication authentication) {
-//        return repo.findByUserName(authentication.getUserName());
-//    }
-
+//-------------
     @RequestMapping("/games")
     public List<Object> getGamesAll() {
 
         return gameRepository.findAll()
                 .stream()
                 .map(game -> game.makeGameDTO())
-                .collect(Collectors.toList())
-                ;
+                .collect(Collectors.toList());
     }
 
     @RequestMapping("/player")
@@ -87,6 +82,78 @@ public class AppController {
                 .map(player -> player.makePlayerDTO())
                 .collect(Collectors.toList());
     }
+//--- --------      esto es para los players!
+
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> createUser(@RequestParam String userName, @RequestParam String password) {
+
+        if (userName.isEmpty() || password.isEmpty())  {
+            return new ResponseEntity<>(makeMap("error", "Faltan datos"), HttpStatus.FORBIDDEN);
+        }
+        Player player = playerRepository.findByUserName(userName);
+        if (player != null) {
+            return new ResponseEntity<>((Map<String, Object>) makeMap("error", "Username already exists"), HttpStatus.CONFLICT);
+        }
+
+        playerRepository.save(new Player(userName, password));
+        return new ResponseEntity<>(makeMap("OK","player created succesfully"),  HttpStatus.CREATED);
+    }
+
+    public Map<String,Object> makeMap(String key, Object value) {
+
+        Map<String, Object> dto =new LinkedHashMap<>();
+        dto.put(key, value);
+        return dto;
+    }
+
+    //----- ESTO ES JOIN GAMEEE
+
+    @RequestMapping(path = "/game/{nn}/players", method = RequestMethod.POST)
+    public ResponseEntity <Map<String, Object>> joinGame(@PathVariable long nn, Authentication authentication) {
+
+        //GamePlayer gamePlayer = gamePlayerRepository.save(new GamePlayer(game, player));
+        if (isGuest(authentication)) {
+            return new ResponseEntity<>(makeMap("error", "Unable to join new game while not logged in"),
+                    HttpStatus.UNAUTHORIZED);
+        }
+
+        Game game = gameRepository.findById(nn).get();
+        if (game == null) {
+            return new ResponseEntity<>(makeMap("error", "game does not exist"), HttpStatus.FORBIDDEN);
+        }
+
+        Player playerLoged = playerRepository.findByUserName(authentication.getName());
+        if (game.getGamePlayers().size() < 2) {
+            GamePlayer newGamePlayer = new GamePlayer(game, playerLoged);
+            gamePlayerRepository.save(newGamePlayer);
+
+            return new ResponseEntity<>(makeMap("gpid", newGamePlayer.getId()), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(makeMap("error", "Already two players in this game"), HttpStatus.FORBIDDEN);
+        }
+    }
+
+        @RequestMapping(path = "/games", method = RequestMethod.POST)
+        public ResponseEntity<Map<String, Object>> createGame(Authentication authentication) {
+            if (isGuest(authentication)) {
+                return new ResponseEntity<>(makeMap("error", "Unable to create new game while not logged in"),
+                        HttpStatus.UNAUTHORIZED);
+            }
+
+            Player playerLogged = playerRepository.findByUserName(authentication.getName());
+
+            if (playerLogged != null) {
+                Game newGame = new Game();
+                GamePlayer newGamePlayer = new GamePlayer(newGame, playerLogged);
+                gameRepository.save(newGame);
+                gamePlayerRepository.save(newGamePlayer);
+
+                return new ResponseEntity<>(makeMap("gpid", newGamePlayer.getId()), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(makeMap("error", "Unable to find your username"), HttpStatus.UNAUTHORIZED);
+            }
+        }
+
 
     @RequestMapping("/game_view/{nn}")
     public Map<String, Object> getGameViewAll(@PathVariable long nn) {
@@ -115,30 +182,28 @@ public class AppController {
         return dto;
     }
 
+
     @RequestMapping("leaderBoard")
-    public List<Object> getAllScores() {
+    public List<Object> getAllScores () {
         List<Object> allPlayers = playerRepository.findAll()
                 .stream()
                 .map(player -> player.makeCalculoPointsDTO())
                 .collect(Collectors.toList());
 
-        return allPlayers;
+        return (List<Object>) allPlayers;
     }
-
-    @RequestMapping(path = "/players", method = RequestMethod.POST)
-    public ResponseEntity<Object> register (
-            @RequestParam String userName, @RequestParam String password)  {
-
-        if (userName.isEmpty() || password.isEmpty()) {
-            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
-        }
-
-        if (playerRepository.findByUserName(userName) != null) {
-            return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
-        }
-
-        playerRepository.save(new Player(userName, passwordEncoder.encode(password)));
-        return new ResponseEntity<>(HttpStatus.CREATED);
-
+    public boolean isGuest(Authentication authentication) {
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
 }
+
+
+/* para games
+public Map<String, Object> getGameAll(Authentication authentication) {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        if (Util.isGuest(authentication)) {
+            dto.put("player", "Guest");
+        } else {
+            Player playerAutenticado = playerRepository.findByUserName((authentication.getName()));
+            dto.put("player", playerAutenticado.makePlayerDTO());
+        }*/
