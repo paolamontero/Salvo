@@ -4,10 +4,7 @@ import com.codeoftheweb.Salvo.Repository.GamePlayerRepository;
 import com.codeoftheweb.Salvo.Repository.GameRepository;
 import com.codeoftheweb.Salvo.Repository.PlayerRepository;
 import com.codeoftheweb.Salvo.Repository.ShipRepository;
-import com.codeoftheweb.Salvo.models.Game;
-import com.codeoftheweb.Salvo.models.GamePlayer;
-import com.codeoftheweb.Salvo.models.Player;
-import com.codeoftheweb.Salvo.models.Ship;
+import com.codeoftheweb.Salvo.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -27,7 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-public class AppController {
+public class AppController<CREATED> {
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -64,15 +61,19 @@ public class AppController {
 
 //-------------
     @RequestMapping("/games")
-    public List<Object> getGamesAll() {
-
-        return gameRepository.findAll()
+    public Map<String, Object> getGamesAll(Authentication authentication) {
+         Map<String,Object> map = new LinkedHashMap<>();
+        if (isGuest(authentication))
+         map.put("player", "Guest");
+        else map.put("player", playerRepository.findByUserName(authentication.getName()).makePlayerDTO());
+        map.put("games",gameRepository.findAll()
                 .stream()
                 .map(game -> game.makeGameDTO())
-                .collect(Collectors.toList());
-    }
+                .collect(Collectors.toList()));
+        return map;
+    } //antes tenia solo games, y ahora le agrego player como gest o el usuario logged.
 
-    @RequestMapping("/player")
+    @RequestMapping("/players")
     public List<Object> getPlayersAll() {
 
         return playerRepository.findAll()
@@ -83,17 +84,17 @@ public class AppController {
 //--- --------      esto es para los players!
 
     @RequestMapping(path = "/players", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> createUser(@RequestParam String userName, @RequestParam String password) {
+    public ResponseEntity<Map<String, Object>> createUser(@RequestParam String email, @RequestParam String password) {
 
-        if (userName.isEmpty() || password.isEmpty())  {
+        if (email.isEmpty() || password.isEmpty())  {
             return new ResponseEntity<>(makeMap("error", "Faltan datos"), HttpStatus.FORBIDDEN);
         }
-        Player player = playerRepository.findByUserName(userName);
+        Player player = playerRepository.findByUserName(email);
         if (player != null) {
             return new ResponseEntity<>((Map<String, Object>) makeMap("error", "Username already exists"), HttpStatus.CONFLICT);
         }
 
-        playerRepository.save(new Player(userName, password));
+        playerRepository.save(new Player(email, password));
         return new ResponseEntity<>(makeMap("OK","player created succesfully"),  HttpStatus.CREATED);
     }
 
@@ -162,7 +163,7 @@ public class AppController {
         Game game = gamePlayer.getGame();
         Player playerLogged = playerRepository.findByUserName(authentication.getName());
 
-        if (isGuest(authentication)) {// verifico si es invitado, en ese caso no tiene permisos para ver game view
+        if (isGuest(authentication)) {
             return new ResponseEntity<>(makeMap("error", "No name given"), HttpStatus.UNAUTHORIZED);
         }
         if (gamePlayer.getPlayer().getId() != playerLogged.getId()) {
@@ -185,7 +186,7 @@ public class AppController {
                 .stream()
                 .map(ship -> ship.makeShipDTO())
                 .collect(Collectors.toList()));
-        dto.put("salvos", gamePlayer.getGame().getGamePlayers()
+        dto.put("salvoes", gamePlayer.getGame().getGamePlayers()
                 .stream()
                 .flatMap(_gamePlayer -> _gamePlayer.getSalvos()
                         .stream())
@@ -196,20 +197,6 @@ public class AppController {
 
         return new ResponseEntity<>(dto, HttpStatus.ACCEPTED);
     }
-//--------------
-    @RequestMapping("leaderBoard")
-    public List<Object> getAllScores () {
-        List<Object> allPlayers = playerRepository.findAll()
-                .stream()
-                .map(player -> player.makeCalculoPointsDTO())
-                .collect(Collectors.toList());
-
-        return (List<Object>) allPlayers;
-    }
-    public boolean isGuest(Authentication authentication) {
-        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
-    }
-
 
     //-- tarea 3: Implemente un metodo controlador para una lista de barcos colocados :
 
@@ -247,7 +234,6 @@ public class AppController {
         return new ResponseEntity<>(makeMap("OK","ships added"), HttpStatus.CREATED);
     }
 
-
     public String getState(GamePlayer gamePlayerSelf, GamePlayer gamePlayerOpponent){
         if(gamePlayerSelf.getShips().isEmpty()){
             return "PLACESHIPS";
@@ -267,8 +253,70 @@ public class AppController {
 
         return "LOST";
     }
+
+//        if (gamePlayerRepository.findById(gamePlayerId)  == null){
+//            return new ResponseEntity<>(makeMap("error", "not a valid gamePlayer id"), HttpStatus.UNAUTHORIZED);
+//
+
+
+   //Tarea 4: Implemente un metodo controlador para almacenar salvos (igual a la 3,) esto es la parte uno, aun falta la parte 2
+    @RequestMapping (path = "/games/players/{gamePlayerId}/salvos", method = RequestMethod.POST)
+    public ResponseEntity <Map<String,Object>> saveSalvos(@PathVariable long gamePlayerId, @RequestBody Salvo shot, Authentication authentication){
+
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).get();
+        Player playerLogged = playerRepository.findByUserName(authentication.getName());
+
+        if (isGuest(authentication)) {
+            return new ResponseEntity<>(makeMap("error", "You cannot join the game while you are not logged in"),
+                    HttpStatus.UNAUTHORIZED);
+        }
+
+        if (gamePlayerRepository.findById(gamePlayerId)  == null){
+            return new ResponseEntity<>(makeMap("error", "you dont have a valid gamePlayer id"), HttpStatus.UNAUTHORIZED);
+        }
+
+
+        if(gamePlayer.getPlayer().getId() != playerLogged.getId() ){
+            return new ResponseEntity<>(makeMap("error", "your userName is not added to the gamePlayer listed"), HttpStatus.UNAUTHORIZED);
+        }
+
+        if (gamePlayer.getSalvos().stream().count() > gamePlayer.getOpponent().getSalvos().stream().count()) {
+            return new ResponseEntity<>(makeMap("error", "Salvos already shot"), HttpStatus.FORBIDDEN);
+        }
+
+        if(gamePlayer.getSalvos().stream().filter(salvo1 -> salvo1.getTurn() == shot.getTurn()).count() > 0){
+            new ResponseEntity<>(makeMap("error", "you already have fired in this turn"), HttpStatus.FORBIDDEN);
+        }
+
+        shot.setGamePlayer(gamePlayer);
+        gamePlayerRepository.save(gamePlayer);
+
+        return new ResponseEntity<>(makeMap("OK","shots fired"), HttpStatus.CREATED);
+    }
+
+
+    //--------------
+    @RequestMapping("leaderBoard")
+    public List<Object> getAllScores () {
+        List<Object> allPlayers = playerRepository.findAll()
+                .stream()
+                .map(player -> player.makeCalculoPointsDTO())
+                .collect(Collectors.toList());
+
+        return (List<Object>) allPlayers;
+    }
+    public boolean isGuest(Authentication authentication) {
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+    }
+
 }
 
+/*  tarea 5
+*
+* en el turno 2 del json
+*
+*
+*   */
 
 /* para games
 public Map<String, Object> getGameAll(Authentication authentication) {

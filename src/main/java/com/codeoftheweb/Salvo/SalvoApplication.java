@@ -273,11 +273,11 @@ public class SalvoApplication extends SpringBootServletInitializer {
                     score3.setScore(0.5);
                     score4.setScore(0);
 
-                    // asigno los barcos a las jugadas
-//                    gamePlayer1.addShip(ship1);
-//                    gamePlayer2.addShip(ship2);
-//                    gamePlayer3.addShip(ship3);
-//                    gamePlayer4.addShip(ship4);
+                     //asigno los barcos a las jugadas
+                    gamePlayer1.addShip(ship1);
+                    gamePlayer2.addShip(ship2);
+                    gamePlayer3.addShip(ship3);
+                    gamePlayer4.addShip(ship4);
 
 
                     //info en los repositorios
@@ -361,9 +361,12 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
                     .antMatchers("/api/games").permitAll()
                     .antMatchers("/api/players", "/api/login", "/api/logout").permitAll()
                     .antMatchers("/rest").denyAll()
+                    .antMatchers("/api/games/players/{gamePlayerId}/ships").hasAuthority("USER")
                     .antMatchers("/web/games.html").permitAll()
+                    .antMatchers("/api/games/players/{gamePlayerId}/salvos").hasAuthority("USER")
                     .antMatchers("/api/users").permitAll()
                     .antMatchers("/web/game.html?gp=*", "/api/game_view/*").hasAuthority("USER")
+                    .antMatchers("/api/game/{gameId}/players").hasAuthority("USER")
                     .anyRequest().denyAll()
 //                .antMatchers("/*").permitAll()
             ;
@@ -371,8 +374,8 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
             http.formLogin()
                     .usernameParameter("name")
                     .passwordParameter("pwd")
-                    .loginPage("/api/login");
-            http.logout().logoutUrl("/api/logout");
+                    .loginPage("/api/login").permitAll();
+            http.logout().logoutUrl("/api/logout").permitAll();
 //--------------------------------------------------------------------------------------------------------
             // turn off checking for CSRF tokens
             http.csrf().disable();

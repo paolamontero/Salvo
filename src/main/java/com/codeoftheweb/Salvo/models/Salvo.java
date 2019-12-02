@@ -86,6 +86,5 @@ public class Salvo {
 }
 
 
-
-
 /// settter and getters para que sirven: para establecer, pues nos sirve para asignar un valor inicial al atributo.
+// seria para establecer y obtener!!

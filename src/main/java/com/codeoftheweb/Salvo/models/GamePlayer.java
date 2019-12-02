@@ -35,12 +35,14 @@ public class GamePlayer {
 
     public GamePlayer(Date joinDate) {
         this.joinDate = new Date();
+        this.ships = new HashSet<>();
     }
 
     public GamePlayer(Game game, Player player) {
         this.game = game;
         this.player = player;
         this.joinDate = new Date();
+        this.ships = new HashSet<>();
     }
 
     public Score getScore (){
@@ -128,16 +130,16 @@ public class GamePlayer {
                 .collect(Collectors.toList());
     }
 
-    public GamePlayer getOpponent(){
+    public GamePlayer getOpponent() {
         return this.getGame().getGamePlayers().stream()
                 .filter(gamePlayers -> gamePlayers.getId() != this.getId())
                 .findFirst().orElse(new GamePlayer());
+    }
+    public void addShip(Ship ship1){
+            ships.add(ship1); //no podia poner addShip porque estaba llamando al metdo una y otra vez y se hacia bcle infinito. llamo a la funcion de la lista.
+    }
 
-//    public void addShip(Ship ship1) {
-//        ships.add(ship1); //no podia poner addShip porque estaba llamando al metdo una y otra vez y se hacia bcle infinito. llamo a la funcion de la lista.
-//    }
 
-}
 }
 
 
