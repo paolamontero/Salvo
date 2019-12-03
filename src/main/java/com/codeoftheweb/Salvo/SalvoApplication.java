@@ -99,7 +99,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
                 List<String> shipLocation2 = new ArrayList<>();
                 shipLocation2.add("H9");
                 shipLocation2.add("H10");
-                shipLocation2.add("H11");
+                shipLocation2.add("H8");
 
                 List<String> shipLocation3 = new ArrayList<>();
                 shipLocation3.add("C2");
@@ -114,12 +114,12 @@ public class SalvoApplication extends SpringBootServletInitializer {
                 List<String> shipLocation5 = new ArrayList<>();
                 shipLocation5.add("H9");
                 shipLocation5.add("H10");
-                shipLocation5.add("H11");
+                shipLocation5.add("H8");
 
                 List<String> shipLocation6 = new ArrayList<>();
-                shipLocation1.add("K1");
-                shipLocation1.add("K2");
-                shipLocation1.add("K3");
+                shipLocation1.add("J10");
+                shipLocation1.add("J2");
+                shipLocation1.add("J3");
 
                 List<String> shipLocation7 = new ArrayList<>();
                 shipLocation1.add("E1");
@@ -180,7 +180,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
                 shipLocation1.add("H8");
                 shipLocation1.add("H9");
                 shipLocation1.add("H10");
-                shipLocation1.add("H11");
+                shipLocation1.add("H7");
 
                 List<String> shipLocation19 = new ArrayList<>();
                 shipLocation1.add("A2");
@@ -198,59 +198,59 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 
                 //ships game 1
-                Ship ship1 = new Ship("Carrier", gamePlayer1, shipLocation1);
-                Ship ship2 = new Ship("Destroyer", gamePlayer2, shipLocation2);
-                Ship ship3 = new Ship("Submarine", gamePlayer1, shipLocation3);
-                Ship ship4 = new Ship("Battleship", gamePlayer3, shipLocation11);
-                Ship ship5 = new Ship("Patrol Boat", gamePlayer3, shipLocation5);
-                Ship ship6 = new Ship("Patrol Boat", gamePlayer3, shipLocation8);
+                Ship ship1 = new Ship("carrier", gamePlayer1, shipLocation1);
+                Ship ship2 = new Ship("destroyer", gamePlayer2, shipLocation2);
+                Ship ship3 = new Ship("submarine", gamePlayer1, shipLocation3);
+                Ship ship4 = new Ship("battleship", gamePlayer3, shipLocation11);
+                Ship ship5 = new Ship("patrolboat", gamePlayer3, shipLocation5);
+                Ship ship6 = new Ship("patrolboat", gamePlayer3, shipLocation8);
 
                 //ships game2
-                Ship ship7 = new Ship("Patrol Boat", gamePlayer3, shipLocation15);
-                Ship ship8 = new Ship("Patrol Boat", gamePlayer3, shipLocation6);
-                Ship ship9 = new Ship("Battleship", gamePlayer3, shipLocation9);
-                Ship ship10 = new Ship("Battleship", gamePlayer3, shipLocation17);
+                Ship ship7 = new Ship("patrolboat", gamePlayer3, shipLocation15);
+                Ship ship8 = new Ship("patrolboat", gamePlayer3, shipLocation6);
+                Ship ship9 = new Ship("battleship", gamePlayer3, shipLocation9);
+                Ship ship10 = new Ship("battleship", gamePlayer3, shipLocation17);
 
 
                     // creo LAS UBICACIONES de los disparos o salvos
 
                     //game1
                     List<String> salvoLocation1 = new ArrayList<>();
-                    salvoLocation1.add("A1");
-                    salvoLocation1.add("A2");
+                    salvoLocation1.add("H2");
+                    salvoLocation1.add("H3");
 
                     List<String>salvoLocation2 = new ArrayList<>();
-                    salvoLocation2.add("C2");
-                    salvoLocation2.add("C3");
-                    salvoLocation2.add("C4");
+                    salvoLocation2.add("E1");
+                    salvoLocation2.add("F1");
+                    salvoLocation2.add("G1");
 
                     //game2
                     List<String>salvoLocation3 =  new ArrayList<>();
-                    salvoLocation3.add("H7");
-                    salvoLocation3.add("H8");
+                    salvoLocation3.add("B4");
+                    salvoLocation3.add("B5");
 
                     List<String> salvoLocation4 =  new ArrayList<>();
-                    salvoLocation4.add("C2");
-                    salvoLocation4.add("C3");
-                    salvoLocation4.add("C4");
+                    salvoLocation4.add("C5");
+                    salvoLocation4.add("D5");
+                    salvoLocation4.add("F1");
 
                     //game3
                     List<String> salvoLocation5 = new ArrayList<>();
-                    salvoLocation5.add("J6");
-                    salvoLocation5.add("J7");
+                    salvoLocation5.add("F2");
+                    salvoLocation5.add("B5");
 
                     List<String> salvoLocation6 = new ArrayList<>();
-                    salvoLocation1.add("A1");
-                    salvoLocation1.add("A2");
+                    salvoLocation1.add("C5");
+                    salvoLocation1.add("D5");
 
                     //game4
                     List<String> salvoLocation7 = new ArrayList<>();
-                    salvoLocation2.add("C2");
-                    salvoLocation2.add("C3");
-                    salvoLocation2.add("C4");
+                    salvoLocation2.add("C6");
+                    salvoLocation2.add("C7");
+                    salvoLocation2.add("A2");
 
                     List<String> salvoLocation8 = new ArrayList<>();
-                    salvoLocation3.add("H7"); salvoLocation3.add("H8");
+                    salvoLocation3.add("A2"); salvoLocation3.add("H8");
 
 
                     //disparos-salvos
@@ -273,11 +273,11 @@ public class SalvoApplication extends SpringBootServletInitializer {
                     score3.setScore(0.5);
                     score4.setScore(0);
 
-                    // asigno los barcos a las jugadas
-//                    gamePlayer1.addShip(ship1);
-//                    gamePlayer2.addShip(ship2);
-//                    gamePlayer3.addShip(ship3);
-//                    gamePlayer4.addShip(ship4);
+                     //asigno los barcos a las jugadas
+                    gamePlayer1.addShip(ship1);
+                    gamePlayer2.addShip(ship2);
+                    gamePlayer3.addShip(ship3);
+                    gamePlayer4.addShip(ship4);
 
 
                     //info en los repositorios
@@ -361,9 +361,12 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
                     .antMatchers("/api/games").permitAll()
                     .antMatchers("/api/players", "/api/login", "/api/logout").permitAll()
                     .antMatchers("/rest").denyAll()
+                    .antMatchers("/api/games/players/{gamePlayerId}/ships").hasAuthority("USER")
                     .antMatchers("/web/games.html").permitAll()
+                    .antMatchers("/api/games/players/{gamePlayerId}/salvos").hasAuthority("USER")
                     .antMatchers("/api/users").permitAll()
                     .antMatchers("/web/game.html?gp=*", "/api/game_view/*").hasAuthority("USER")
+                    .antMatchers("/api/game/{gameId}/players").hasAuthority("USER")
                     .anyRequest().denyAll()
 //                .antMatchers("/*").permitAll()
             ;
@@ -371,8 +374,8 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
             http.formLogin()
                     .usernameParameter("name")
                     .passwordParameter("pwd")
-                    .loginPage("/api/login");
-            http.logout().logoutUrl("/api/logout");
+                    .loginPage("/api/login").permitAll();
+            http.logout().logoutUrl("/api/logout").permitAll();
 //--------------------------------------------------------------------------------------------------------
             // turn off checking for CSRF tokens
             http.csrf().disable();
@@ -394,14 +397,4 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
 

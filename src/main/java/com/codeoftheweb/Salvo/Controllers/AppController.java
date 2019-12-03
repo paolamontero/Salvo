@@ -197,13 +197,3 @@ public class AppController {
     }
 }
 
-
-/* para games
-public Map<String, Object> getGameAll(Authentication authentication) {
-        Map<String, Object> dto = new LinkedHashMap<>();
-        if (Util.isGuest(authentication)) {
-            dto.put("player", "Guest");
-        } else {
-            Player playerAutenticado = playerRepository.findByUserName((authentication.getName()));
-            dto.put("player", playerAutenticado.makePlayerDTO());
-        }*/
