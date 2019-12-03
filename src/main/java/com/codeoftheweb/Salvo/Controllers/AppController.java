@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class AppController<CREATED> {
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+     private PasswordEncoder passwordEncoder;
 
     @Autowired
     PlayerRepository playerRepository;
@@ -155,6 +155,8 @@ public class AppController<CREATED> {
         }
 
 //----------------
+    // en la tarea 5 solo modificamos en game view supuestamente.
+
     @RequestMapping("/game_view/{gpid}")
     //public Map<String, Object> getGameViewAll(@PathVariable long nn) {
     public ResponseEntity<Map<String, Object>> getGame(@PathVariable long gpid, Authentication authentication) {
