@@ -198,7 +198,9 @@ public class AppController<CREATED> {
         dto.put("gameState", getState(gamePlayer, gamePlayer.getOpponent()));
 
         return new ResponseEntity<>(dto, HttpStatus.ACCEPTED);
-    }
+
+//            return dto;
+        }
 
     //-- tarea 3: Implemente un metodo controlador para una lista de barcos colocados :
 
@@ -293,7 +295,7 @@ public class AppController<CREATED> {
         shot.setGamePlayer(gamePlayer);
         gamePlayerRepository.save(gamePlayer);
 
-        return new ResponseEntity<>(makeMap("OK","shots fired"), HttpStatus.CREATED);
+        return new ResponseEntity<>(makeMap("OK","disparos lanzados"), HttpStatus.CREATED);
     }
 
 
@@ -316,9 +318,6 @@ public class AppController<CREATED> {
 /*  tarea 5
 *
 * en el turno 2 del json
-*
-*
-*   */
 
 /* para games
 public Map<String, Object> getGameAll(Authentication authentication) {

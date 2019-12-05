@@ -188,8 +188,6 @@ public class SalvoApplication extends SpringBootServletInitializer {
                 shipLocation1.add("A4");
                 shipLocation1.add("D8");
 
-
-
                 //horarios
             game1.setCreationDate(Date.from(game1.getCreationDate().toInstant().plusSeconds(3600)));
             game2.setCreationDate(Date.from(game2.getCreationDate().toInstant().plusSeconds(3600)));
@@ -299,12 +297,12 @@ public class SalvoApplication extends SpringBootServletInitializer {
                     gamePlayerRepository.save(gamePlayer3);
                     gamePlayerRepository.save(gamePlayer4);
                     gamePlayerRepository.save(gamePlayer6);
-                    gamePlayerRepository.save(gamePlayer7);
-                    gamePlayerRepository.save(gamePlayer8);
-                    gamePlayerRepository.save(gamePlayer9);
-                    gamePlayerRepository.save(gamePlayer10);
-                    gamePlayerRepository.save(gamePlayer11);
-                    gamePlayerRepository.save(gamePlayer12);
+//                    gamePlayerRepository.save(gamePlayer7);
+//                    gamePlayerRepository.save(gamePlayer8);
+//                    gamePlayerRepository.save(gamePlayer9);
+//                    gamePlayerRepository.save(gamePlayer10);
+//                    gamePlayerRepository.save(gamePlayer11);
+//                    gamePlayerRepository.save(gamePlayer12);
 
                     //lista de barcos
 
