@@ -162,14 +162,9 @@ public class GamePlayer {
             dtoList.add(dto);
         }
         return dtoList;
-
     }
 
-    public int carrier = 0;
-    public int battleship = 0;
-    public int submarine = 0;
-    public int destroyer = 0;
-    public int patrolboat = 0;
+    int carrier = 0; int battleship = 0; int submarine = 0; int destroyer = 0; int patrolboat = 0;
 
     public List<String> getHitsLocations(GamePlayer gamePlayer, Salvo salvoOpponent) {
         return gamePlayer.getShips()
@@ -183,11 +178,8 @@ public class GamePlayer {
                 .collect(Collectors.toList());
     }
 
-
     public Map<String, Object> getShipByType(GamePlayer gamePlayer, Salvo salvo) {
         Map<String, Object> dtoBarcos = new LinkedHashMap<>();
-
-
 
         int carrierHits = this.countHits(gamePlayer.getShips()
                 .stream()

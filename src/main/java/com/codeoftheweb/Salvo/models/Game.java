@@ -87,6 +87,7 @@ public class Game {
                 .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
                 .collect(Collectors.toList()));
 
+
         dto.put("scores", this.getScores()
                 .stream()
                 .map(score -> score.makeScoreDTO())
@@ -100,6 +101,8 @@ public class Game {
                 .flatMap(gamePlayer -> gamePlayer.getSalvos().stream())
                 .map(salvo -> salvo.makeSalvoDto())
                 .collect(Collectors.toList());
-    }
+
+
+        }
 
 }

@@ -32,7 +32,7 @@ public class Score {
 
     //CONSTRUCTORES
 
-    public Score() {
+    public Score(Game game, Player opponentPlayer, double v, Date date) {
     }
 
     public Score(Player player, Game game){

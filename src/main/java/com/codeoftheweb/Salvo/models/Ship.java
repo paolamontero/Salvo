@@ -26,11 +26,6 @@ public class Ship {
 
     public Ship(){}
 
- // NOTAS SOBRE CONSTRUCTORES.
-    /*Estos son consructores sobrecargados: porque aceptan diferentes parametro en su definicion.
-    los parametros son shipType (tipo string, gameplayer que es de tipo Gameplayer, y shiplocation que es una lista de strings)
-    estos parametrso son asignados a los atributos correspondientes de la clase*/
-
     public Ship(String shipType,GamePlayer gamePlayer, List<String> shipLocations) {
         this.shipType = shipType;
         this.gamePlayer = gamePlayer;

@@ -1,9 +1,6 @@
 package com.codeoftheweb.Salvo.Controllers;
 
-import com.codeoftheweb.Salvo.Repository.GamePlayerRepository;
-import com.codeoftheweb.Salvo.Repository.GameRepository;
-import com.codeoftheweb.Salvo.Repository.PlayerRepository;
-import com.codeoftheweb.Salvo.Repository.ShipRepository;
+import com.codeoftheweb.Salvo.Repository.*;
 import com.codeoftheweb.Salvo.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +37,12 @@ public class AppController<CREATED> {
 
     @Autowired
     ShipRepository shipRepository;
+
+    @Autowired
+    ScoreRepository scoreRepository;
+
+    @Autowired
+    SalvoRepository salvoRepository;
 
     @Configuration
     class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
@@ -173,10 +176,11 @@ public class AppController<CREATED> {
         }
 
         Map<String, Object> hits = new LinkedHashMap<>();
+        Map<String, Object> dto = new LinkedHashMap<>();
+
         hits.put("self", new ArrayList<>());
         hits.put("opponent", new ArrayList<>());
 
-        Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("id", game.getId());
         dto.put("created", game.getCreationDate());
         dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
@@ -198,7 +202,6 @@ public class AppController<CREATED> {
         dto.put("gameState", getState(gamePlayer, gamePlayer.getOpponent()));
 
         return new ResponseEntity<>(dto, HttpStatus.ACCEPTED);
-
 //            return dto;
         }
 
@@ -238,32 +241,77 @@ public class AppController<CREATED> {
         return new ResponseEntity<>(makeMap("OK","ships added"), HttpStatus.CREATED);
     }
 
-    public String getState(GamePlayer gamePlayerSelf, GamePlayer gamePlayerOpponent){
+    public String getState(GamePlayer gamePlayerSelf, GamePlayer gamePlayerOpponent) { /// aqui empieza la tarea6
+        //------------------esto ya lo tenia
+
         if(gamePlayerSelf.getShips().isEmpty()){
             return "PLACESHIPS";
         }
 
         if(gamePlayerSelf.getGame().getGamePlayers().size() == 1){
-            return "WAITINGFOROPP";
+            return "WAITINGFOROPPONENT";
         }
 
-        if(gamePlayerSelf.getId() < gamePlayerOpponent.getId()){
-            return "PLAY";
+        if(gamePlayerSelf.getOpponent().getShips().isEmpty()){
+            return "WAITINGFOROPPONENT";
         }
 
-        if (gamePlayerSelf.getId() > gamePlayerOpponent.getId()){
+
+        if(gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()) {
+
+            Player selfPlayer = gamePlayerSelf.getPlayer();
+            Player opponentPlayer = gamePlayerOpponent.getPlayer();
+            Game game = gamePlayerSelf.getGame();
+            if (Util.allShipsDown(gamePlayerSelf) == true && Util.allShipsDown(gamePlayerOpponent) == true) {
+                Score scoreSelf = new Score(game, selfPlayer, 0.5, new Date());
+                Score scoreOpponent = new Score(game, opponentPlayer, 0.5, new Date());
+                if(!existScore(scoreSelf, game)){
+                    scoreRepository.save(scoreSelf);
+                    scoreRepository.save(scoreOpponent);
+                }
+                return "TIE";
+            }
+
+            if( (Util.allShipsDown(gamePlayerSelf) == true) &&
+                    Util.allShipsDown(gamePlayerOpponent) == false){
+                Score scoreSelf = new Score(game, selfPlayer, 0.0, new Date());
+                Score scoreOpponent = new Score(game, opponentPlayer, 1.0, new Date());
+                if(!existScore(scoreSelf, game)){
+                    scoreRepository.save(scoreSelf);
+                    scoreRepository.save(scoreOpponent);
+                }
+                return "LOST";
+
+            } if( (Util.allShipsDown(gamePlayerSelf) == false) &&
+                    Util.allShipsDown(gamePlayerOpponent) == true){
+                Score scoreSelf = new Score(game, selfPlayer, 1.0, new Date());
+                Score scoreOpponent = new Score(game, opponentPlayer, 0.0, new Date());
+                if(!existScore(scoreSelf, game)) {
+                    scoreRepository.save(scoreSelf);
+                    scoreRepository.save(scoreOpponent);
+                }
+                return "WON";
+            }
+        }
+
+        if (gamePlayerSelf.getSalvos().size() > gamePlayerOpponent.getSalvos().size()) {
             return "WAIT";
         }
 
-        return "LOST";
+        return "PLAY";
     }
 
-//        if (gamePlayerRepository.findById(gamePlayerId)  == null){
-//            return new ResponseEntity<>(makeMap("error", "not a valid gamePlayer id"), HttpStatus.UNAUTHORIZED);
-//
+    public boolean existScore (Score score, Game game){
+        boolean existScore = false;
+        if(!game.getScores().isEmpty()){
+            existScore = true;
+        }
+        return existScore;
+    }
 
 
-   //Tarea 4: Implemente un metodo controlador para almacenar salvos (igual a la 3,) esto es la parte uno, aun falta la parte 2
+
+    //Tarea 4: Implemente un metodo controlador para almacenar salvos (igual a la 3,) esto es la parte uno, aun falta la parte 2
     @RequestMapping (path = "/games/players/{gamePlayerId}/salvos", method = RequestMethod.POST)
     public ResponseEntity <Map<String,Object>> saveSalvos(@PathVariable long gamePlayerId, @RequestBody Salvo shot, Authentication authentication){
 
@@ -292,12 +340,28 @@ public class AppController<CREATED> {
             new ResponseEntity<>(makeMap("error", "you already have fired in this turn"), HttpStatus.FORBIDDEN);
         }
 
-        shot.setGamePlayer(gamePlayer);
-        gamePlayerRepository.save(gamePlayer);
+        if(shot.getSalvoLocations().size() != 5){
+            return new ResponseEntity<>(makeMap("error", "debes disparar 5 veces"), HttpStatus.CONFLICT);
+        }
+
+        int turn = gamePlayer.getSalvos().size();
+        if(gamePlayer.getSalvos().isEmpty()){
+            shot.setTurn(1);
+            shot.setGamePlayer(gamePlayer);
+            salvoRepository.save(shot);
+            turn++;
+        }
+        else {
+            shot.setTurn(turn+1);
+            shot.setGamePlayer(gamePlayer);
+            salvoRepository.save(shot);
+        }
+
+//        shot.setGamePlayer(gamePlayer);
+//        gamePlayerRepository.save(gamePlayer);
 
         return new ResponseEntity<>(makeMap("OK","disparos lanzados"), HttpStatus.CREATED);
     }
-
 
     //--------------
     @RequestMapping("leaderBoard")
@@ -314,17 +378,3 @@ public class AppController<CREATED> {
     }
 
 }
-
-/*  tarea 5
-*
-* en el turno 2 del json
-
-/* para games
-public Map<String, Object> getGameAll(Authentication authentication) {
-        Map<String, Object> dto = new LinkedHashMap<>();
-        if (Util.isGuest(authentication)) {
-            dto.put("player", "Guest");
-        } else {
-            Player playerAutenticado = playerRepository.findByUserName((authentication.getName()));
-            dto.put("player", playerAutenticado.makePlayerDTO());
-        }*/
