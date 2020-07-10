@@ -1,0 +1,1 @@
+Juego Batalla Naval que realizamos con Java en una capacitacion que participe en Accenture Accademy. Utilizando el programa editor IntelliJ IDEA, y herramientas como Spring, Spring Boot, Hibernate, entre otros. Tambien involucrando conocimientos de frontend obtenidos previamente. 
